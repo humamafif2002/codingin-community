@@ -55,7 +55,17 @@ services:
       - ./:/var/www
     ports:
       - "5173:5173" # Port bawaan Vite agar hot-reload jalan di browser
-    command: sh -c "npm install && npm run dev"
+    command: >
+      sh -c "
+        npm install &&
+        if [ '${APP_ENV}' = 'local' ]; then
+          echo 'Menjalankan Vite Dev Server untuk lokal...';
+          npm run dev;
+        else
+          echo 'Membangun aset statis untuk produksi...';
+          npm run build;
+        fi
+      "
     networks:
       - laravel_network
 
