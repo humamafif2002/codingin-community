@@ -53,7 +53,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           script: |
-            cd /var/www/nama-folder-project-lu
+            cd /home/codingin-academy/laravel-docker
 
             # Putusin sementara akses web biar gak ada error pas proses update
             docker-compose exec -T app php artisan down
