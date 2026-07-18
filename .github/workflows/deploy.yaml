@@ -1,0 +1,72 @@
+name: CI/CD Pipeline Laravel
+
+# Script ini akan jalan setiap kali ada 'push' ke branch 'main'
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  # ==========================================
+  # SEGMENT 1: TESTING (Node Pertama)
+  # ==========================================
+  test:
+    name: Jalankan Unit & Feature Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Tarik Kode dari GitHub
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3" # Sesuaikan dengan versi PHP lu
+          extensions: mbstring, dom, fileinfo, pdo_sqlite
+
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Siapkan Environment Laravel untuk Test
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Eksekusi Testing
+        # Laravel secara default menggunakan SQLite di memori untuk testing, jadi tidak butuh DB beneran
+        run: php artisan test
+
+  # ==========================================
+  # SEGMENT 2: DEPLOYMENT (Node Kedua)
+  # ==========================================
+  deploy:
+    name: Deploy ke VPS Server
+    needs: test # INI KUNCINYA! Job ini hanya jalan kalau job 'test' berstatus sukses (hijau)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Eksekusi Perintah di VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            cd /var/www/nama-folder-project-lu
+
+            # Putusin sementara akses web biar gak ada error pas proses update
+            docker-compose exec -T app php artisan down
+
+            # Tarik kode terbaru
+            git pull origin main
+
+            # Update dependency dan database
+            docker-compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
+            docker-compose exec -T app php artisan migrate --force
+
+            # Restart Vite/Node
+            docker-compose restart node
+
+            # Nyalain webnya lagi
+            docker-compose exec -T app php artisan up
