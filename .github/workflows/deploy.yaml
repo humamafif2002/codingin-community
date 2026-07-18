@@ -56,17 +56,17 @@ jobs:
             cd /home/codingin-academy/laravel-docker
 
             # Putusin sementara akses web biar gak ada error pas proses update
-            docker-compose exec -T app php artisan down
+            docker compose exec -T app php artisan down
 
             # Tarik kode terbaru
             git pull origin main
 
             # Update dependency dan database
-            docker-compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
-            docker-compose exec -T app php artisan migrate --force
+            docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
+            docker compose exec -T app php artisan migrate --force
 
             # Restart Vite/Node
-            docker-compose restart node
+            docker compose restart node
 
             # Nyalain webnya lagi
-            docker-compose exec -T app php artisan up
+            docker compose exec -T app php artisan up
