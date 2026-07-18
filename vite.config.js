@@ -10,14 +10,15 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
-    watch: {
-        usePolling: true, // TAMBAHKAN BARIS INI
-    },
+
     server: {
         host: '0.0.0.0',
         port: 5173,
         hmr: {
-            host: 'app',
+            host: 'localhost',
+        },
+        watch: {
+            usePolling: true,
         },
     },
 });
