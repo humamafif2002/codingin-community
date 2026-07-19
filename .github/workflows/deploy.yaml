@@ -55,18 +55,12 @@ jobs:
           script: |
             cd /home/adminapp/codingin-community
 
-            # Putusin sementara akses web
+            # Putusin sementara akses web biar gak ada error pas proses update
             docker compose exec -T app php artisan down
 
-            # 1. Whitelist folder di VPS agar Git tidak curiga
-            git config --global --add safe.directory /home/adminapp/codingin-community
-            
             # Tarik kode terbaru
             git pull origin main
 
-            # 2. Whitelist folder di dalam Docker agar Composer lancar
-            docker compose exec -T app git config --global --add safe.directory /var/www
-            
             # Update dependency dan database
             docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
             docker compose exec -T app php artisan migrate --force
