@@ -33,7 +33,7 @@ services:
     networks:
       - laravel_network
     # Pengkondisian pemilihan file berdasarkan APP_ENV
-   command: >
+    command: >
       sh -c "
         if [ '${APP_ENV}' = 'local' ]; then
           echo 'Menjalankan Nginx untuk LOKAL (HTTP 80)...';
