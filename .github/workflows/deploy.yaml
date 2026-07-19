@@ -59,7 +59,7 @@ jobs:
             sudo docker compose exec -T app php artisan down
 
             # Tarik kode terbaru
-            sudo git pull origin master
+            git pull origin master
 
             # Update dependency dan database
             sudo docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
