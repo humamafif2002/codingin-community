@@ -4,7 +4,7 @@ name: CI/CD Pipeline Laravel
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   # ==========================================
