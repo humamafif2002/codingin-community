@@ -56,17 +56,17 @@ jobs:
             cd /home/adminapp/codingin-community
 
             # Putusin sementara akses web biar gak ada error pas proses update
-            docker compose exec -T app php artisan down
+            sudo docker compose exec -T app php artisan down
 
             # Tarik kode terbaru
-            git pull origin master
+            sudo git pull origin master
 
             # Update dependency dan database
-            docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
-            docker compose exec -T app php artisan migrate --force
+            sudo docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
+            sudo docker compose exec -T app php artisan migrate --force
 
             # Restart Vite/Node
-            docker compose restart node
+            sudo docker compose restart node
 
             # Nyalain webnya lagi
-            docker compose exec -T app php artisan up
+            sudo docker compose exec -T app php artisan up
