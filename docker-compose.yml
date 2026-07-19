@@ -33,13 +33,16 @@ services:
     networks:
       - laravel_network
     # Pengkondisian pemilihan file berdasarkan APP_ENV
-    command: >
+   command: >
       sh -c "
         if [ '${APP_ENV}' = 'local' ]; then
-          echo 'Menjalankan Nginx untuk LOKAL (HTTP)...';
+          echo 'Menjalankan Nginx untuk LOKAL (HTTP 80)...';
+          cp /etc/nginx/nginx.local.conf /etc/nginx/conf.d/default.conf;
+        elif [ '${APP_ENV}' = 'staging' ]; then
+          echo 'Menjalankan Nginx untuk STAGING (HTTP 80 untuk Certbot)...';
           cp /etc/nginx/nginx.local.conf /etc/nginx/conf.d/default.conf;
         else
-          echo 'Menjalankan Nginx untuk PRODUKSI (HTTPS)...';
+          echo 'Menjalankan Nginx untuk PRODUKSI (HTTPS 443)...';
           cp /etc/nginx/nginx.prod.conf /etc/nginx/conf.d/default.conf;
         fi &&
         nginx -g 'daemon off;'
@@ -77,8 +80,11 @@ services:
         if [ '${APP_ENV}' = 'local' ]; then
           echo 'Menjalankan Vite Dev Server untuk lokal...';
           npm run dev;
+        elif [ '${APP_ENV}' = 'staging' ]; then
+          echo 'Membangun aset statis untuk STAGING...';
+          npm run build;
         else
-          echo 'Membangun aset statis untuk produksi...';
+          echo 'Membangun aset statis untuk PRODUKSI...';
           npm run build;
         fi
       "
