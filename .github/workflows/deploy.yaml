@@ -55,18 +55,18 @@ jobs:
           script: |
             cd /home/adminapp/codingin-community
 
-            # Putusin sementara akses web biar gak ada error pas proses update
-            docker compose exec -T app php artisan down
+            # Putusin sementara akses web
+            docker compose exec app php artisan down
 
             # Tarik kode terbaru
             git pull origin main
 
             # Update dependency dan database
-            docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader
-            docker compose exec -T app php artisan migrate --force
+            docker compose exec app composer install --no-interaction --prefer-dist --optimize-autoloader
+            docker compose exec app php artisan migrate --force
 
             # Restart Vite/Node
             docker compose restart node
 
             # Nyalain webnya lagi
-            docker compose exec -T app php artisan up
+            docker compose exec app php artisan up
